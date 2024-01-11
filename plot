@@ -37,8 +37,8 @@ data[["interval"]] <- factor(data[["interval"]], levels = intervals, labels = c(
 data[["type"]] <- factor(data[["type"]], levels = c("scan", "update"), labels = c("Table scan", "Update"))
 
 p1 <- ggplot(data, aes(x = rep, y = num_reqs)) +
-    geom_line(aes(color = type)) +
-    labs(x = "Repetitions", y = "Number of S3 requests", color = "Type of operation") +
+    geom_line(aes(color = type, linetype = type)) +
+    labs(x = "Repetitions", y = "Number of S3 requests", color = "Type of operation", linetype = "Type of operation") +
     theme(legend.position = "top") +
     facet_wrap(vars(interval), ncol = 2)
 
@@ -46,8 +46,8 @@ ggsave("num_reqs.pdf", plot = p1, width = 7, height = 10)
 ggsave("num_reqs.svg", plot = p1, width = 7, height = 10)
 
 p2 <- ggplot(data, aes(x = rep, y = times)) +
-    geom_line(aes(color = type)) +
-    labs(x = "Repetitions", y = "Time [ms]", color = "Type of operation") +
+    geom_line(aes(color = type, linetype = type)) +
+    labs(x = "Repetitions", y = "Time [ms]", color = "Type of operation", linetype = "Type of operation") +
     theme(legend.position = "top") +
     facet_wrap(vars(interval), ncol = 2)
 
