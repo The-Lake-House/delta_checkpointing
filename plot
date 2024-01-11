@@ -42,8 +42,8 @@ p1 <- ggplot(data, aes(x = rep, y = num_reqs)) +
     theme(legend.position = "top") +
     facet_wrap(vars(interval), ncol = 2)
 
-ggsave("num_reqs.pdf", plot = p1, width = 7, height = 10)
-ggsave("num_reqs.svg", plot = p1, width = 7, height = 10)
+ggsave("num_reqs.pdf", plot = p1, height = 10)
+ggsave("num_reqs.svg", plot = p1, height = 10)
 
 p2 <- ggplot(data, aes(x = rep, y = times)) +
     geom_line(aes(color = type, linetype = type)) +
@@ -51,5 +51,5 @@ p2 <- ggplot(data, aes(x = rep, y = times)) +
     theme(legend.position = "top") +
     facet_wrap(vars(interval), ncol = 2)
 
-ggsave("times.pdf", plot = p2, width = 7, height = 10)
-ggsave("times.svg", plot = p2, width = 7, height = 10)
+ggsave("times.pdf", plot = p2, height = 10)
+ggsave("times.svg", plot = p2, height = 10)
