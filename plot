@@ -38,7 +38,7 @@ data[["type"]] <- factor(data[["type"]], levels = c("scan", "update"), labels = 
 
 p1 <- ggplot(data, aes(x = rep, y = num_reqs)) +
     geom_line(aes(color = type)) +
-    labs(title = "Delta Lake: Effect of checkpointing", x = "Repetitions", y = "Number of S3 requests", color = "Type of operation") +
+    labs(x = "Repetitions", y = "Number of S3 requests", color = "Type of operation") +
     theme(legend.position = "top") +
     facet_wrap(vars(interval), ncol = 2)
 
@@ -47,7 +47,7 @@ ggsave("num_reqs.svg", plot = p1, width = 7, height = 10)
 
 p2 <- ggplot(data, aes(x = rep, y = times)) +
     geom_line(aes(color = type)) +
-    labs(title = "Delta Lake: Effect of checkpointing", x = "Repetitions", y = "Time [ms]", color = "Type of operation") +
+    labs(x = "Repetitions", y = "Time [ms]", color = "Type of operation") +
     theme(legend.position = "top") +
     facet_wrap(vars(interval), ncol = 2)
 
