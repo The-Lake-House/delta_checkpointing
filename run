@@ -1,4 +1,4 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 #
 # Measure the impact of checkpointing on runtime and S3 requests.
 #
