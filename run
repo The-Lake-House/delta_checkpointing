@@ -13,7 +13,7 @@ NUM_REPS=125
 SCHEMA_NAME=delta_checkpointing
 BUCKET_NAME=delta-checkpointing
 
-mkdir -p runtime_{op,scan}
+mkdir -p runtime_{update,scan}
 
 mcli mb -p "minio/$BUCKET_NAME"
 spark-sql-hms-delta -e "CREATE SCHEMA IF NOT EXISTS $SCHEMA_NAME LOCATION 's3a://$BUCKET_NAME/';" &> /dev/null
@@ -26,7 +26,7 @@ for INTERVAL in 2000000 1 10 25 50; do
         # UPDATE OPERATION
         mcli admin trace minio > "trace_update_${INTERVAL}_${REP}" &
         PID=$!
-        spark-sql-hms-delta --conf spark.eventLog.enabled=true --conf "spark.eventLog.dir=$PWD/runtime_op" --database "$SCHEMA_NAME" -e "INSERT INTO store VALUES ($((10#$REP)), 0);" &> /dev/null
+        spark-sql-hms-delta --conf spark.eventLog.enabled=true --conf "spark.eventLog.dir=$PWD/runtime_update" --database "$SCHEMA_NAME" -e "INSERT INTO store VALUES ($((10#$REP)), 0);" &> /dev/null
         kill -SIGINT $PID
         # TABLE SCAN
         mcli admin trace minio > "trace_scan_${INTERVAL}_${REP}" &
