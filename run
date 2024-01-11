@@ -13,25 +13,24 @@ NUM_REPS=125
 SCHEMA_NAME=delta_checkpointing
 BUCKET_NAME=delta-checkpointing
 
-mkdir -p runtime_{update,scan}
-
 mcli mb -p "minio/$BUCKET_NAME"
 spark-sql-hms-delta -e "CREATE SCHEMA IF NOT EXISTS $SCHEMA_NAME LOCATION 's3a://$BUCKET_NAME/';" &> /dev/null
 spark-sql-hms-delta --database "$SCHEMA_NAME" -e "DROP TABLE IF EXISTS store;" &> /dev/null
 
 for INTERVAL in 2000000 1 10 25 50; do
     echo "$INTERVAL"
+    mkdir -p "runtime_{update,scan}/$INTERVAL"
     spark-sql-hms-delta --database "$SCHEMA_NAME" -e "CREATE TABLE store (key INT, value INT) USING delta TBLPROPERTIES (delta.checkpointInterval = $INTERVAL);" &> /dev/null
     for REP in $(seq -w 1 "$NUM_REPS"); do
         # UPDATE OPERATION
         mcli admin trace minio > "trace_update_${INTERVAL}_${REP}" &
         PID=$!
-        spark-sql-hms-delta --conf spark.eventLog.enabled=true --conf "spark.eventLog.dir=$PWD/runtime_update" --database "$SCHEMA_NAME" -e "INSERT INTO store VALUES ($((10#$REP)), 0);" &> /dev/null
+        spark-sql-hms-delta --conf spark.eventLog.enabled=true --conf "spark.eventLog.dir=$PWD/runtime_update/$INTERVAL" --database "$SCHEMA_NAME" -e "INSERT INTO store VALUES ($((10#$REP)), 0);" &> /dev/null
         kill -SIGINT $PID
         # TABLE SCAN
         mcli admin trace minio > "trace_scan_${INTERVAL}_${REP}" &
         PID=$!
-        spark-sql-hms-delta --conf spark.eventLog.enabled=true --conf "spark.eventLog.dir=$PWD/runtime_scan" --database "$SCHEMA_NAME" -e "SELECT * FROM store;" &> /dev/null
+        spark-sql-hms-delta --conf spark.eventLog.enabled=true --conf "spark.eventLog.dir=$PWD/runtime_scan/$INTERVAL" --database "$SCHEMA_NAME" -e "SELECT * FROM store;" &> /dev/null
         kill -SIGINT $PID
         echo "> $REP"
     done
